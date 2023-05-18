@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2015 Eric Larson
+# SPDX-FileCopyrightText: 2015 Eric Larson, 2023 Frost Ming
 #
 # SPDX-License-Identifier: Apache-2.0
 
@@ -7,7 +7,7 @@ Test for supporting redirect caches as needed.
 """
 import requests
 
-from cachecontrol import CacheControl
+from cacheyou import CacheControl
 
 
 class TestPermanentRedirects(object):

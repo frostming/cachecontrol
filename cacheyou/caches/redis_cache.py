@@ -1,15 +1,15 @@
-# SPDX-FileCopyrightText: 2015 Eric Larson
+# SPDX-FileCopyrightText: 2015 Eric Larson, 2023 Frost Ming
 #
 # SPDX-License-Identifier: Apache-2.0
 
 from __future__ import division
 
 from datetime import datetime
-from cachecontrol.cache import BaseCache
+
+from cacheyou.cache import BaseCache
 
 
 class RedisCache(BaseCache):
-
     def __init__(self, conn):
         self.conn = conn
 

@@ -1,19 +1,18 @@
-# SPDX-FileCopyrightText: 2015 Eric Larson
+# SPDX-FileCopyrightText: 2015 Eric Larson, 2023 Frost Ming
 #
 # SPDX-License-Identifier: Apache-2.0
+
+from pprint import pprint
 
 import pytest
 import requests
 
-from cachecontrol import CacheControl
-from cachecontrol.cache import DictCache
-from cachecontrol.compat import urljoin
-
-from pprint import pprint
+from cacheyou import CacheControl
+from cacheyou.cache import DictCache
+from cacheyou.compat import urljoin
 
 
 class TestVary(object):
-
     @pytest.fixture()
     def sess(self, url):
         self.url = urljoin(url, "/vary_accept")

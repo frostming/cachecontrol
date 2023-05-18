@@ -1,19 +1,16 @@
 #!/usr/bin/env python3
+import logging
 import sys
 
-import cachecontrol
 import requests
-from cachecontrol.cache import DictCache
-from cachecontrol.heuristics import BaseHeuristic
 
-import logging
+import cacheyou
+from cacheyou.cache import DictCache
+from cacheyou.heuristics import BaseHeuristic
 
 clogger = logging.getLogger("cachecontrol")
 clogger.addHandler(logging.StreamHandler())
 clogger.setLevel(logging.DEBUG)
-
-
-from pprint import pprint
 
 
 class NoAgeHeuristic(BaseHeuristic):
@@ -22,7 +19,7 @@ class NoAgeHeuristic(BaseHeuristic):
             del response.headers["cache-control"]
 
 
-cache_adapter = cachecontrol.CacheControlAdapter(
+cache_adapter = cacheyou.CacheControlAdapter(
     DictCache(), cache_etags=True, heuristic=NoAgeHeuristic()
 )
 

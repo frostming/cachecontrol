@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2015 Eric Larson
+# SPDX-FileCopyrightText: 2015 Eric Larson, 2023 Frost Ming
 #
 # SPDX-License-Identifier: Apache-2.0
 """
@@ -9,7 +9,7 @@ from __future__ import print_function, unicode_literals
 import pytest
 import requests
 
-from cachecontrol import CacheControl
+from cacheyou import CacheControl
 
 
 @pytest.fixture()
@@ -22,7 +22,6 @@ def sess():
 
 
 class TestChunkedResponses(object):
-
     def test_cache_chunked_response(self, url, sess):
         """
         Verify that an otherwise cacheable response is cached when the

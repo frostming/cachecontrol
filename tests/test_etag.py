@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2015 Eric Larson
+# SPDX-FileCopyrightText: 2015 Eric Larson, 2023 Frost Ming
 #
 # SPDX-License-Identifier: Apache-2.0
 
@@ -6,9 +6,9 @@ import pytest
 import requests
 from mock import Mock, patch
 
-from cachecontrol import CacheControl
-from cachecontrol.cache import DictCache
-from cachecontrol.compat import urljoin
+from cacheyou import CacheControl
+from cacheyou.cache import DictCache
+from cacheyou.compat import urljoin
 
 from .utils import NullSerializer
 

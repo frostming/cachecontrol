@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2015 Eric Larson
+# SPDX-FileCopyrightText: 2015 Eric Larson, 2023 Frost Ming
 #
 # SPDX-License-Identifier: Apache-2.0
 
@@ -6,7 +6,7 @@ from datetime import datetime
 
 from mock import Mock
 
-from cachecontrol.caches import RedisCache
+from cacheyou.caches import RedisCache
 
 
 class TestRedisCache(object):

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2015 Eric Larson
+# SPDX-FileCopyrightText: 2015 Eric Larson, 2023 Frost Ming
 #
 # SPDX-License-Identifier: Apache-2.0
 
@@ -7,14 +7,14 @@ Unit tests that verify FileCache storage works correctly.
 """
 import os
 import string
-
 from random import randint, sample
 
 import pytest
 import requests
-from cachecontrol import CacheControl
-from cachecontrol.caches import FileCache, SeparateBodyFileCache
 from filelock import FileLock
+
+from cacheyou import CacheControl
+from cacheyou.caches import FileCache, SeparateBodyFileCache
 
 
 def randomdata():
@@ -25,7 +25,6 @@ def randomdata():
 
 
 class FileCacheTestsMixin(object):
-
     FileCacheClass = None  # Either FileCache or SeparateBodyFileCache
 
     @pytest.fixture()

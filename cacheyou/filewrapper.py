@@ -1,9 +1,9 @@
-# SPDX-FileCopyrightText: 2015 Eric Larson
+# SPDX-FileCopyrightText: 2015 Eric Larson, 2023 Frost Ming
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from tempfile import NamedTemporaryFile
 import mmap
+from tempfile import NamedTemporaryFile
 
 
 class CallbackFileWrapper(object):

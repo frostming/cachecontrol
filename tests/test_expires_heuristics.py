@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2015 Eric Larson
+# SPDX-FileCopyrightText: 2015 Eric Larson, 2023 Frost Ming
 #
 # SPDX-License-Identifier: Apache-2.0
 
@@ -11,8 +11,8 @@ from pprint import pprint
 from mock import Mock
 from requests import Session, get
 
-from cachecontrol import CacheControl
-from cachecontrol.heuristics import (
+from cacheyou import CacheControl
+from cacheyou.heuristics import (
     TIME_FMT,
     BaseHeuristic,
     ExpiresAfter,

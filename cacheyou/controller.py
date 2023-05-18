@@ -1,21 +1,20 @@
-# SPDX-FileCopyrightText: 2015 Eric Larson
+# SPDX-FileCopyrightText: 2015 Eric Larson, 2023 Frost Ming
 #
 # SPDX-License-Identifier: Apache-2.0
 
 """
 The httplib2 algorithms ported for use with requests.
 """
+import calendar
 import logging
 import re
-import calendar
 import time
 from email.utils import parsedate_tz
 
 from requests.structures import CaseInsensitiveDict
 
-from .cache import DictCache, SeparateBodyBaseCache
-from .serialize import Serializer
-
+from cacheyou.cache import DictCache, SeparateBodyBaseCache
+from cacheyou.serialize import Serializer
 
 logger = logging.getLogger(__name__)
 

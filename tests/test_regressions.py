@@ -1,19 +1,18 @@
-# SPDX-FileCopyrightText: 2015 Eric Larson
+# SPDX-FileCopyrightText: 2015 Eric Larson, 2023 Frost Ming
 #
 # SPDX-License-Identifier: Apache-2.0
 
 import sys
+
 import pytest
-
-
-from cachecontrol import CacheControl
-from cachecontrol.caches import FileCache
-from cachecontrol.filewrapper import CallbackFileWrapper
 from requests import Session
+
+from cacheyou import CacheControl
+from cacheyou.caches import FileCache
+from cacheyou.filewrapper import CallbackFileWrapper
 
 
 class Test39(object):
-
     @pytest.mark.skipif(
         sys.version.startswith("2"), reason="Only run this for python 3.x"
     )

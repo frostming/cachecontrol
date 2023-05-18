@@ -1,33 +1,32 @@
-# SPDX-FileCopyrightText: 2015 Eric Larson
+# SPDX-FileCopyrightText: 2015 Eric Larson, 2023 Frost Ming
 #
 # SPDX-License-Identifier: Apache-2.0
 
 import msgpack
 import requests
-
 from mock import Mock
 
-from cachecontrol.compat import pickle
-from cachecontrol.serialize import Serializer
+from cacheyou.compat import pickle
+from cacheyou.serialize import Serializer
 
 
 class TestSerializer(object):
     def setup_method(self):
         self.serializer = Serializer()
         self.response_data = {
-            u"response": {
+            "response": {
                 # Encode the body as bytes b/c it will eventually be
                 # converted back into a BytesIO object.
-                u"body": "Hello World".encode("utf-8"),
-                u"headers": {
-                    u"Content-Type": u"text/plain",
-                    u"Expires": u"87654",
-                    u"Cache-Control": u"public",
+                "body": "Hello World".encode("utf-8"),
+                "headers": {
+                    "Content-Type": "text/plain",
+                    "Expires": "87654",
+                    "Cache-Control": "public",
                 },
-                u"status": 200,
-                u"version": 11,
-                u"reason": u"",
-                u"decode_content": True,
+                "status": 200,
+                "version": 11,
+                "reason": "",
+                "decode_content": True,
             }
         }
 
@@ -138,5 +137,5 @@ class TestSerializer(object):
     def test_no_incomplete_read_on_dumps(self, url):
         resp = requests.get(url + "fixed_length", stream=True)
         self.serializer.dumps(resp.request, resp.raw)
-        
+
         assert resp.content == b"0123456789"

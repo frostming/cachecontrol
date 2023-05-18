@@ -1,16 +1,16 @@
-# SPDX-FileCopyrightText: 2015 Eric Larson
+# SPDX-FileCopyrightText: 2015 Eric Larson, 2023 Frost Ming
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import types
 import functools
+import types
 import zlib
 
 from requests.adapters import HTTPAdapter
 
-from .controller import CacheController, PERMANENT_REDIRECT_STATUSES
-from .cache import DictCache
-from .filewrapper import CallbackFileWrapper
+from cacheyou.cache import DictCache
+from cacheyou.controller import PERMANENT_REDIRECT_STATUSES, CacheController
+from cacheyou.filewrapper import CallbackFileWrapper
 
 
 class CacheControlAdapter(HTTPAdapter):
@@ -25,7 +25,7 @@ class CacheControlAdapter(HTTPAdapter):
         heuristic=None,
         cacheable_methods=None,
         *args,
-        **kw
+        **kw,
     ):
         super(CacheControlAdapter, self).__init__(*args, **kw)
         self.cache = DictCache() if cache is None else cache

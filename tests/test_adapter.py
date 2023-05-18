@@ -1,14 +1,14 @@
-# SPDX-FileCopyrightText: 2015 Eric Larson
+# SPDX-FileCopyrightText: 2015 Eric Larson, 2023 Frost Ming
 #
 # SPDX-License-Identifier: Apache-2.0
 
 import mock
 import pytest
-
 from requests import Session
-from cachecontrol.adapter import CacheControlAdapter
-from cachecontrol.cache import DictCache
-from cachecontrol.wrapper import CacheControl
+
+from cacheyou.adapter import CacheControlAdapter
+from cacheyou.cache import DictCache
+from cacheyou.wrapper import CacheControl
 
 
 def use_wrapper():
@@ -35,7 +35,6 @@ def sess(url, request):
 
 
 class TestSessionActions(object):
-
     def test_get_caches(self, url, sess):
         r2 = sess.get(url)
         assert r2.from_cache is True

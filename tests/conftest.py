@@ -1,19 +1,16 @@
-# SPDX-FileCopyrightText: 2015 Eric Larson
+# SPDX-FileCopyrightText: 2015 Eric Larson, 2023 Frost Ming
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from pprint import pformat
-
 import os
 import socket
-
-import pytest
+from pprint import pformat
 
 import cherrypy
+import pytest
 
 
 class SimpleApp(object):
-
     def __init__(self):
         self.etag_count = 0
         self.update_etag_string()
@@ -109,7 +106,7 @@ class SimpleApp(object):
         headers = [
             ("Content-Type", "text/plain"),
             ("Cache-Control", "max-age=5000"),
-            ("Content-Length", str(len(body)))
+            ("Content-Length", str(len(body))),
         ]
         start_response("200 OK", headers)
         return [body]
