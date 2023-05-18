@@ -1,18 +1,19 @@
-# SPDX-FileCopyrightText: 2015 Eric Larson
+# SPDX-FileCopyrightText: 2015 Eric Larson, 2023 Frost Ming
 #
 # SPDX-License-Identifier: Apache-2.0
 
 from __future__ import print_function
-import pytest
 
+import pytest
 from requests import Session
-from cachecontrol.adapter import CacheControlAdapter
-from cachecontrol.cache import DictCache
+
+from cacheyou.adapter import CacheControlAdapter
+from cacheyou.cache import DictCache
+
 from .utils import NullSerializer
 
 
 class TestMaxAge(object):
-
     @pytest.fixture()
     def sess(self, url):
         self.url = url

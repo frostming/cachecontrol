@@ -1,9 +1,9 @@
-# SPDX-FileCopyrightText: 2015 Eric Larson
+# SPDX-FileCopyrightText: 2015 Eric Larson, 2023 Frost Ming
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from .adapter import CacheControlAdapter
-from .cache import DictCache
+from cacheyou.adapter import CacheControlAdapter
+from cacheyou.cache import DictCache
 
 
 def CacheControl(
@@ -16,7 +16,6 @@ def CacheControl(
     adapter_class=None,
     cacheable_methods=None,
 ):
-
     cache = DictCache() if cache is None else cache
     adapter_class = adapter_class or CacheControlAdapter
     adapter = adapter_class(

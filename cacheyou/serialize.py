@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2015 Eric Larson
+# SPDX-FileCopyrightText: 2015 Eric Larson, 2023 Frost Ming
 #
 # SPDX-License-Identifier: Apache-2.0
 
@@ -10,7 +10,7 @@ import zlib
 import msgpack
 from requests.structures import CaseInsensitiveDict
 
-from .compat import HTTPResponse, pickle, text_type
+from cacheyou.compat import HTTPResponse, pickle, text_type
 
 
 def _b64_decode_bytes(b):
@@ -44,28 +44,28 @@ class Serializer(object):
         #       doesn't know the difference. Forcing these to unicode will be
         #       enough to have msgpack know the difference.
         data = {
-            u"response": {
-                u"body": body,  # Empty bytestring if body is stored separately
-                u"headers": dict(
+            "response": {
+                "body": body,  # Empty bytestring if body is stored separately
+                "headers": dict(
                     (text_type(k), text_type(v)) for k, v in response.headers.items()
                 ),
-                u"status": response.status,
-                u"version": response.version,
-                u"reason": text_type(response.reason),
-                u"decode_content": response.decode_content,
+                "status": response.status,
+                "version": response.version,
+                "reason": text_type(response.reason),
+                "decode_content": response.decode_content,
             }
         }
 
         # Construct our vary headers
-        data[u"vary"] = {}
-        if u"vary" in response_headers:
-            varied_headers = response_headers[u"vary"].split(",")
+        data["vary"] = {}
+        if "vary" in response_headers:
+            varied_headers = response_headers["vary"].split(",")
             for header in varied_headers:
                 header = text_type(header).strip()
                 header_value = request.headers.get(header, None)
                 if header_value is not None:
                     header_value = text_type(header_value)
-                data[u"vary"][header] = header_value
+                data["vary"][header] = header_value
 
         return b",".join([b"cc=4", msgpack.dumps(data, use_bin_type=True)])
 

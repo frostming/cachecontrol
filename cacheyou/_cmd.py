@@ -1,16 +1,15 @@
-# SPDX-FileCopyrightText: 2015 Eric Larson
+# SPDX-FileCopyrightText: 2015 Eric Larson, 2023 Frost Ming
 #
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
+from argparse import ArgumentParser
 
 import requests
 
-from cachecontrol.adapter import CacheControlAdapter
-from cachecontrol.cache import DictCache
-from cachecontrol.controller import logger
-
-from argparse import ArgumentParser
+from cacheyou.adapter import CacheControlAdapter
+from cacheyou.cache import DictCache
+from cacheyou.controller import logger
 
 
 def setup_logging():

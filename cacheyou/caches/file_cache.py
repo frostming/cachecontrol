@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2015 Eric Larson
+# SPDX-FileCopyrightText: 2015 Eric Larson, 2023 Frost Ming
 #
 # SPDX-License-Identifier: Apache-2.0
 
@@ -68,10 +68,10 @@ class _FileCacheMixin:
         dirmode=0o0700,
         lock_class=None,
     ):
-
         try:
             if lock_class is None:
                 from filelock import FileLock
+
                 lock_class = FileLock
         except ImportError:
             notice = dedent(

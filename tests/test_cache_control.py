@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2015 Eric Larson
+# SPDX-FileCopyrightText: 2015 Eric Larson, 2023 Frost Ming
 #
 # SPDX-License-Identifier: Apache-2.0
 
@@ -11,9 +11,9 @@ from tempfile import mkdtemp
 import pytest
 from mock import ANY, Mock
 
-from cachecontrol import CacheController
-from cachecontrol.cache import DictCache
-from cachecontrol.caches import SeparateBodyFileCache
+from cacheyou import CacheController
+from cacheyou.cache import DictCache
+from cacheyou.caches import SeparateBodyFileCache
 
 from .utils import DummyRequest, DummyResponse, NullSerializer
 
