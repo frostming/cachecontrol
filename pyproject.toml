@@ -1,0 +1,45 @@
+[project]
+name = "CacheYou"
+version = "0.0.1"
+description = "httplib2 caching for requests"
+keywords = ["requests", "http", "caching", "web"]
+readme = "README.md"
+authors = [
+    {name = "Frost Ming", email = "me@frostming.com"},
+    {name = "Eric Larson", email = "eric@ionrock.org"},
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Topic :: Internet :: WWW/HTTP",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+requires-python = ">=3.7"
+dependencies = [
+    "msgpack>=0.5.2",
+    "requests",
+]
+
+[project.urls]
+Homepage = "https://github.com/ionrock/cachecontrol"
+
+[project.optional-dependencies]
+filecache = [
+    "filelock>=3.8.0",
+]
+redis = [
+    "redis>=2.10.5",
+]
+
+[project.scripts]
+doesitcache = "cachecontrol._cmd:main"
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
