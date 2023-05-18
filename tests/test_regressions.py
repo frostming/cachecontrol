@@ -12,7 +12,7 @@ from cacheyou.caches import FileCache
 from cacheyou.filewrapper import CallbackFileWrapper
 
 
-class Test39(object):
+class Test39:
     @pytest.mark.skipif(
         sys.version.startswith("2"), reason="Only run this for python 3.x"
     )

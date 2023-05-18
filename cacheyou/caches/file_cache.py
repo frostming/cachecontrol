@@ -6,14 +6,8 @@ import hashlib
 import os
 from textwrap import dedent
 
-from ..cache import BaseCache, SeparateBodyBaseCache
-from ..controller import CacheController
-
-try:
-    FileNotFoundError
-except NameError:
-    # py2.X
-    FileNotFoundError = (IOError, OSError)
+from cacheyou.cache import BaseCache, SeparateBodyBaseCache
+from cacheyou.controller import CacheController
 
 
 def _secure_open_write(filename, fmode):
@@ -39,7 +33,7 @@ def _secure_open_write(filename, fmode):
     # there
     try:
         os.remove(filename)
-    except (IOError, OSError):
+    except OSError:
         # The file must not exist already, so we can just skip ahead to opening
         pass
 
@@ -120,7 +114,7 @@ class _FileCacheMixin:
         # Make sure the directory exists
         try:
             os.makedirs(os.path.dirname(path), self.dirmode)
-        except (IOError, OSError):
+        except OSError:
             pass
 
         with self.lock_class(path + ".lock"):

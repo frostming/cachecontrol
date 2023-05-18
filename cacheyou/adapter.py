@@ -27,7 +27,7 @@ class CacheControlAdapter(HTTPAdapter):
         *args,
         **kw,
     ):
-        super(CacheControlAdapter, self).__init__(*args, **kw)
+        super().__init__(*args, **kw)
         self.cache = DictCache() if cache is None else cache
         self.heuristic = heuristic
         self.cacheable_methods = cacheable_methods or ("GET",)
@@ -54,7 +54,7 @@ class CacheControlAdapter(HTTPAdapter):
             # check for etags and add headers if appropriate
             request.headers.update(self.controller.conditional_headers(request))
 
-        resp = super(CacheControlAdapter, self).send(request, **kw)
+        resp = super().send(request, **kw)
 
         return resp
 
@@ -120,7 +120,7 @@ class CacheControlAdapter(HTTPAdapter):
                         _update_chunk_length, response
                     )
 
-        resp = super(CacheControlAdapter, self).build_response(request, response)
+        resp = super().build_response(request, response)
 
         # See if we should invalidate the cache.
         if request.method in self.invalidating_methods and resp.ok:
@@ -134,4 +134,4 @@ class CacheControlAdapter(HTTPAdapter):
 
     def close(self):
         self.cache.close()
-        super(CacheControlAdapter, self).close()
+        super().close()

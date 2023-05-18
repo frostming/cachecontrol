@@ -2,18 +2,19 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+from unittest.mock import Mock, patch
+from urllib.parse import urljoin
+
 import pytest
 import requests
-from mock import Mock, patch
 
 from cacheyou import CacheControl
 from cacheyou.cache import DictCache
-from cacheyou.compat import urljoin
 
 from .utils import NullSerializer
 
 
-class TestETag(object):
+class TestETag:
     """Test our equal priority caching with ETags
 
     Equal Priority Caching is a term I've defined to describe when
@@ -25,9 +26,7 @@ class TestETag(object):
         self.etag_url = urljoin(url, "/etag")
         self.update_etag_url = urljoin(url, "/update_etag")
         self.cache = DictCache()
-        sess = CacheControl(
-            requests.Session(), cache=self.cache, serializer=NullSerializer()
-        )
+        sess = CacheControl(requests.Session(), cache=self.cache, serializer=NullSerializer())
         yield sess
 
         # closing session object
@@ -80,7 +79,7 @@ class TestETag(object):
         assert self.cache.get(self.etag_url) == resp.raw
 
 
-class TestDisabledETags(object):
+class TestDisabledETags:
     """Test our use of ETags when the response is stale and the
     response has an ETag.
     """
@@ -117,7 +116,7 @@ class TestDisabledETags(object):
         assert r.status_code == 200
 
 
-class TestReleaseConnection(object):
+class TestReleaseConnection:
     """
     On 304s we still make a request using our connection pool, yet
     we do not call the parent adapter, which releases the connection
