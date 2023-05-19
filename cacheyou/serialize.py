@@ -36,13 +36,6 @@ class Serializer:
             response._fp = io.BytesIO(body)
             response.length_remaining = len(body)
 
-        # NOTE: This is all a bit weird, but it's really important that on
-        #       Python 2.x these objects are unicode and not str, even when
-        #       they contain only ascii. The problem here is that msgpack
-        #       understands the difference between unicode and bytes and we
-        #       have it set to differentiate between them, however Python 2
-        #       doesn't know the difference. Forcing these to unicode will be
-        #       enough to have msgpack know the difference.
         data = {
             "response": {
                 "body": body,  # Empty bytestring if body is stored separately
@@ -162,8 +155,7 @@ class Serializer:
         # We need to decode the items that we've base64 encoded
         cached["response"]["body"] = _b64_decode_bytes(cached["response"]["body"])
         cached["response"]["headers"] = {
-            _b64_decode_str(k): _b64_decode_str(v)
-            for k, v in cached["response"]["headers"].items()
+            _b64_decode_str(k): _b64_decode_str(v) for k, v in cached["response"]["headers"].items()
         }
         cached["response"]["reason"] = _b64_decode_str(cached["response"]["reason"])
         cached["vary"] = {
