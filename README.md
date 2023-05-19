@@ -3,7 +3,7 @@
 
 [![Latest Version](https://img.shields.io/pypi/v/cacheyou.svg)](https://pypi.python.org/pypi/cacheyou)
 
-CachYou is a fork of [CacheControl] which is a port of the caching algorithms in httplib2 for use with
+CacheYou is a fork of [CacheControl] which is a port of the caching algorithms in httplib2 for use with
 requests session object.
 
 [CacheControl]: https://github.com/ionrock/cachecontrol

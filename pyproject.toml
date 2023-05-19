@@ -1,5 +1,6 @@
 [project]
 name = "CacheYou"
+version = "23.0"
 description = "httplib2 caching for requests"
 keywords = ["requests", "http", "caching", "web"]
 readme = "README.md"
@@ -24,7 +25,6 @@ dependencies = [
     "msgpack>=0.5.2",
     "requests",
 ]
-dynamic = ["version"]
 
 [project.urls]
 Homepage = "https://github.com/ionrock/cachecontrol"
@@ -40,11 +40,39 @@ redis = [
 [project.scripts]
 doesitcache = "cachecontrol._cmd:main"
 
-[tool.pdm.version]
-source = "scm"
+[tool.pdm]
+plugins = ["pdm-autoexport"]
+
+[tool.pdm.scripts]
+docs = [
+    "sphinx-autobuild",
+    "docs/",
+    "build/docs",
+    # Rebuild all files when rebuilding
+    "-a",
+    # Trigger rebuilds on code changes (for autodoc)
+    "--watch",
+    "cacheyou",
+    # Use a not-common high-numbered port
+    "--port",
+    "8765",
+]
 
 [tool.pdm.dev-dependencies]
-dev = ["tox"]
+dev = [
+    "tox",
+    "bumpver>=2023.1124",
+]
+docs = [
+    "sphinx",
+    "sphinx-autobuild",
+    "sphinx-rtd-theme>=1.2.0",
+]
+
+[[tool.pdm.autoexport]]
+filename = "docs/requirements.txt"
+groups = ["docs"]
+without-hashes = true
 
 [build-system]
 requires = ["pdm-backend"]
@@ -75,3 +103,22 @@ max-complexity = 10
 
 [tool.ruff.isort]
 known-first-party = ["cacheyou"]
+
+[tool.bumpver]
+current_version = "23.0"
+version_pattern = "YY.INC0[PYTAGNUM]"
+commit_message = "bump version {old_version} -> {new_version}"
+commit = true
+tag = true
+push = true
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = [
+    'version = "{version}"',
+]
+"cacheyou/__init__.py" = [
+    '__version__ = "{pep440_version}"',
+]
+"docs/conf.py" = [
+    'release = "{pep440_version}"',
+]

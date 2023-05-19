@@ -7,6 +7,16 @@
  Release Notes
 ===============
 
+23.0
+======
+
+The first release of ``CacheYou``.
+
+* Replace the usages of deprecated ``datetime.utcnow()``.
+* Fix the compatibility with ``urllib3`` 2.0.
+* Drop the support for Python prior to 3.7.
+* Switch to PDM as the project manager.
+
 0.12.11
 =======
 
@@ -30,7 +40,7 @@ caching large binary payloads.
 0.11.2
 ======
 
-This release introduces the `cachecontrol.heuristics.LastModified`
+This release introduces the `cacheyou.heuristics.LastModified`
 heuristic. This uses the same behaviour as many browsers to base expiry on the
 `Last-Modified` header when no explicit expiry is provided.
 
@@ -53,7 +63,7 @@ to make sure that the bytes/str types are correct, so **please** open
 a new issue if you notice any issues.
 
 This release also introduces the
-`cachecontrol.heuristics.ExpiresAfter` heuristic. This allows passing
+`cacheyou.heuristics.ExpiresAfter` heuristic. This allows passing
 in arguments like a `datetime.timedelta` in order to configure that
 all responses are cached for the specific period of time.
 
