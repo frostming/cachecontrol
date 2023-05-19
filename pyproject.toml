@@ -43,6 +43,9 @@ doesitcache = "cachecontrol._cmd:main"
 [tool.pdm]
 plugins = ["pdm-autoexport"]
 
+[tool.pdm.build]
+source-includes = ["docs/", "tox.ini"]
+
 [tool.pdm.scripts]
 docs = [
     "sphinx-autobuild",
