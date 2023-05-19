@@ -1,8 +1,0 @@
-{
-  "types": {
-    "feat": { "title": "🚀 Features" },
-    "fix": { "title": "🐞 Bug Fixes" },
-    "doc": { "title": "📝 Documentation" },
-    "chore": { "title": "💻 Chores" }
-  }
-}

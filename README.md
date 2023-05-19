@@ -2,6 +2,7 @@
 # CacheYou
 
 [![Latest Version](https://img.shields.io/pypi/v/cacheyou.svg)](https://pypi.python.org/pypi/cacheyou)
+[![CI](https://github.com/frostming/cacheyou/actions/workflows/tests.yml/badge.svg)](https://github.com/frostming/cacheyou/actions/workflows/tests.yml)
 
 CacheYou is a fork of [CacheControl] which is a port of the caching algorithms in httplib2 for use with
 requests session object.
@@ -25,4 +26,4 @@ result in a simple dictionary.
 
 For more info, check out the [docs]
 
-[docs]: http://cachecontrol.readthedocs.org/en/latest/
+[docs]: http://cacheyou.readthedocs.org/en/latest/
