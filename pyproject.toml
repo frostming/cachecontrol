@@ -1,6 +1,5 @@
 [project]
 name = "CacheYou"
-version = "0.0.1"
 description = "httplib2 caching for requests"
 keywords = ["requests", "http", "caching", "web"]
 readme = "README.md"
@@ -25,6 +24,7 @@ dependencies = [
     "msgpack>=0.5.2",
     "requests",
 ]
+dynamic = ["version"]
 
 [project.urls]
 Homepage = "https://github.com/ionrock/cachecontrol"
@@ -39,6 +39,12 @@ redis = [
 
 [project.scripts]
 doesitcache = "cachecontrol._cmd:main"
+
+[tool.pdm.version]
+source = "scm"
+
+[tool.pdm.dev-dependencies]
+dev = ["tox"]
 
 [build-system]
 requires = ["pdm-backend"]

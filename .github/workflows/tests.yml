@@ -15,13 +15,14 @@ concurrency:
 
 jobs:
   tests:
-    name: "Python ${{ matrix.python-version }} ${{ matrix.os }}"
+    name: "Python ${{ matrix.python-version }} ${{ matrix.os }} urllib3@${{ matrix.urllib3 }}"
     runs-on: "${{ matrix.os }}"
 
     strategy:
       matrix:
         python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
         os: ["macos-latest", "windows-latest", "ubuntu-latest"]
+        urllib3: ["1", "2"]
 
     steps:
       - uses: "actions/checkout@v3"
@@ -32,11 +33,12 @@ jobs:
         run: |
           python -VV
           python -m site
-          python -m pip install --upgrade pip setuptools wheel
-          python -m pip install --upgrade virtualenv tox tox-gh-actions
+          python -m pip install --upgrade tox tox-gh-actions
 
       - name: "Run tox targets for ${{ matrix.python-version }}"
         run: "python -m tox"
+        env:
+          URLLIB3: "${{ matrix.urllib3 }}"
 
   release-pypi:
     name: release-pypi
