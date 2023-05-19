@@ -27,7 +27,9 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/ionrock/cachecontrol"
+Homepage = "https://github.com/frostming/cacheyou"
+Documentation = "https://cacheyou.readthedocs.io"
+"Release Notes" = "https://cacheyou.readthedocs.io/en/latest/release_notes.html"
 
 [project.optional-dependencies]
 filecache = [

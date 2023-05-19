@@ -6,7 +6,6 @@ from requests.structures import CaseInsensitiveDict
 
 
 class NullSerializer:
-
     def dumps(self, request, response, body=None):
         return response
 
@@ -18,6 +17,7 @@ class NullSerializer:
 
 class DummyResponse:
     """Match a ``urllib3.response.HTTPResponse``."""
+
     version = "1.1"
     reason = b"Because"
     strict = 0

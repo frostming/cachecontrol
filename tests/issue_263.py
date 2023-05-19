@@ -36,12 +36,10 @@ def log_resp(resp):
         print(f"{k}: {v}")
 
 
-for i in range(2):
-    response = session.get(
-        "https://api.github.com/repos/sigmavirus24/github3.py/pulls/1033"
-    )
+for _ in range(2):
+    response = session.get("https://api.github.com/repos/sigmavirus24/github3.py/pulls/1033")
     log_resp(response)
     print(f"Content length: {len(response.content)}")
-    print(response.from_cache)
+    print(response.from_cache)  # type: ignore[attr-defined]
     if len(response.content) == 0:
         sys.exit(1)

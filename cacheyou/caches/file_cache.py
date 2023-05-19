@@ -1,16 +1,24 @@
 # SPDX-FileCopyrightText: 2015 Eric Larson, 2023 Frost Ming
 #
 # SPDX-License-Identifier: Apache-2.0
+from __future__ import annotations
 
 import hashlib
 import os
+import typing as t
 from textwrap import dedent
 
 from cacheyou.cache import BaseCache, SeparateBodyBaseCache
 from cacheyou.controller import CacheController
 
+if t.TYPE_CHECKING:
+    from datetime import datetime
 
-def _secure_open_write(filename, fmode):
+    from _typeshed import StrPath
+    from filelock import BaseFileLock
+
+
+def _secure_open_write(filename: StrPath, fmode: int) -> t.IO[bytes]:
     # We only want to write to this file, so open it in write only mode
     flags = os.O_WRONLY
 
@@ -56,11 +64,11 @@ class _FileCacheMixin:
 
     def __init__(
         self,
-        directory,
-        forever=False,
-        filemode=0o0600,
-        dirmode=0o0700,
-        lock_class=None,
+        directory: StrPath,
+        forever: bool = False,
+        filemode: int = 0o0600,
+        dirmode: int = 0o0700,
+        lock_class: type[BaseFileLock] | None = None,
     ):
         try:
             if lock_class is None:
@@ -75,7 +83,7 @@ class _FileCacheMixin:
               pip install filelock
             """
             )
-            raise ImportError(notice)
+            raise ImportError(notice) from None
 
         self.directory = directory
         self.forever = forever
@@ -84,17 +92,17 @@ class _FileCacheMixin:
         self.lock_class = lock_class
 
     @staticmethod
-    def encode(x):
+    def encode(x: str) -> str:
         return hashlib.sha224(x.encode()).hexdigest()
 
-    def _fn(self, name):
+    def _fn(self, name: str) -> str:
         # NOTE: This method should not change as some may depend on it.
         #       See: https://github.com/ionrock/cachecontrol/issues/63
         hashed = self.encode(name)
-        parts = list(hashed[:5]) + [hashed]
+        parts = [*list(hashed[:5]), hashed]
         return os.path.join(self.directory, *parts)
 
-    def get(self, key):
+    def get(self, key: str) -> bytes | None:
         name = self._fn(key)
         try:
             with open(name, "rb") as fh:
@@ -103,11 +111,11 @@ class _FileCacheMixin:
         except FileNotFoundError:
             return None
 
-    def set(self, key, value, expires=None):
+    def set(self, key: str, value: bytes, expires: int | datetime | None = None):
         name = self._fn(key)
         self._write(name, value)
 
-    def _write(self, path, data: bytes):
+    def _write(self, path: str, data: bytes) -> None:
         """
         Safely write the data to the given path.
         """
@@ -122,7 +130,7 @@ class _FileCacheMixin:
             with _secure_open_write(path, self.filemode) as fh:
                 fh.write(data)
 
-    def _delete(self, key, suffix):
+    def _delete(self, key: str, suffix: str) -> None:
         name = self._fn(key) + suffix
         if not self.forever:
             try:
@@ -137,7 +145,7 @@ class FileCache(_FileCacheMixin, BaseCache):
     downloads.
     """
 
-    def delete(self, key):
+    def delete(self, key: str) -> None:
         self._delete(key, "")
 
 
@@ -147,23 +155,23 @@ class SeparateBodyFileCache(_FileCacheMixin, SeparateBodyBaseCache):
     peak memory usage.
     """
 
-    def get_body(self, key):
+    def get_body(self, key: str) -> t.IO[bytes] | None:
         name = self._fn(key) + ".body"
         try:
             return open(name, "rb")
         except FileNotFoundError:
             return None
 
-    def set_body(self, key, body):
+    def set_body(self, key: str, body: bytes) -> None:
         name = self._fn(key) + ".body"
         self._write(name, body)
 
-    def delete(self, key):
+    def delete(self, key: str) -> None:
         self._delete(key, "")
         self._delete(key, ".body")
 
 
-def url_to_file_path(url, filecache):
+def url_to_file_path(url: str, filecache: FileCache) -> str:
     """Return the file cache path based on the URL.
 
     This does not ensure the file exists!

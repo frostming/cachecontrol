@@ -13,9 +13,7 @@ from cacheyou.filewrapper import CallbackFileWrapper
 
 
 class Test39:
-    @pytest.mark.skipif(
-        sys.version.startswith("2"), reason="Only run this for python 3.x"
-    )
+    @pytest.mark.skipif(sys.version.startswith("2"), reason="Only run this for python 3.x")
     def test_file_cache_recognizes_consumed_file_handle(self, url):
         s = CacheControl(Session(), FileCache("web_cache"))
         the_url = url + "cache_60"

@@ -7,8 +7,13 @@
  Release Notes
 ===============
 
+Unreleased
+==========
+
+* Add type hints to the code base.
+
 23.0
-======
+====
 
 The first release of ``CacheYou``.
 

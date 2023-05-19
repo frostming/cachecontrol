@@ -18,9 +18,7 @@ class TestMaxAge:
         self.url = url
         self.cache = DictCache()
         sess = Session()
-        sess.mount(
-            "http://", CacheControlAdapter(self.cache, serializer=NullSerializer())
-        )
+        sess.mount("http://", CacheControlAdapter(self.cache, serializer=NullSerializer()))
         return sess
 
     def test_client_max_age_0(self, sess):

@@ -1,9 +1,14 @@
 # SPDX-FileCopyrightText: 2015 Eric Larson, 2023 Frost Ming
 #
 # SPDX-License-Identifier: Apache-2.0
+from __future__ import annotations
 
 import mmap
+import typing as t
 from tempfile import NamedTemporaryFile
+
+if t.TYPE_CHECKING:
+    from http.client import HTTPResponse as HttplibResponse
 
 
 class CallbackFileWrapper:
@@ -25,12 +30,12 @@ class CallbackFileWrapper:
     performance impact.
     """
 
-    def __init__(self, fp, callback):
+    def __init__(self, fp: HttplibResponse, callback: t.Callable[[bytes], None] | None) -> None:
         self.__buf = NamedTemporaryFile("rb+", delete=True)
         self.__fp = fp
         self.__callback = callback
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str) -> t.Any:
         # The vaguaries of garbage collection means that self.__fp is
         # not always set.  By using __getattribute__ and the private
         # name[0] allows looking up the attribute value and raising an
@@ -42,7 +47,7 @@ class CallbackFileWrapper:
         fp = self.__getattribute__("_CallbackFileWrapper__fp")
         return getattr(fp, name)
 
-    def __is_fp_closed(self):
+    def __is_fp_closed(self) -> bool:
         try:
             return self.__fp.fp is None
 
@@ -59,7 +64,7 @@ class CallbackFileWrapper:
         # TODO: Add some logging here...
         return False
 
-    def _close(self):
+    def _close(self) -> None:
         if self.__callback:
             if self.__buf.tell() == 0:
                 # Empty file:
@@ -70,9 +75,7 @@ class CallbackFileWrapper:
                 # a view directly into the filesystem's memory cache, so it
                 # doesn't result in duplicate memory use.
                 self.__buf.seek(0, 0)
-                result = memoryview(
-                    mmap.mmap(self.__buf.fileno(), 0, access=mmap.ACCESS_READ)
-                )
+                result = memoryview(mmap.mmap(self.__buf.fileno(), 0, access=mmap.ACCESS_READ))
             self.__callback(result)
 
         # We assign this to None here, because otherwise we can get into
@@ -86,7 +89,7 @@ class CallbackFileWrapper:
         # Important when caching big files.
         self.__buf.close()
 
-    def read(self, amt=None):
+    def read(self, amt: int | None = None) -> bytes:
         data = self.__fp.read(amt)
         if data:
             # We may be dealing with b'', a sign that things are over:
@@ -97,8 +100,8 @@ class CallbackFileWrapper:
 
         return data
 
-    def _safe_read(self, amt):
-        data = self.__fp._safe_read(amt)
+    def _safe_read(self, amt: int) -> bytes:
+        data = self.__fp._safe_read(amt)  # type: ignore[attr-defined]
         if amt == 2 and data == b"\r\n":
             # urllib executes this read to toss the CRLF at the end
             # of the chunk.
