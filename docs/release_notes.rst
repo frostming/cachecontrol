@@ -7,8 +7,8 @@
  Release Notes
 ===============
 
-Unreleased
-==========
+23.1
+====
 
 * Add type hints to the code base.
 

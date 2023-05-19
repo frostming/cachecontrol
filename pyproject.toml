@@ -40,7 +40,7 @@ redis = [
 ]
 
 [project.scripts]
-doesitcache = "cachecontrol._cmd:main"
+doesitcache = "cacheyou._cmd:main"
 
 [tool.pdm]
 plugins = ["pdm-autoexport"]
