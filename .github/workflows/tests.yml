@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   tests:
-    name: "Python ${{ matrix.python-version }} ${{ matrix.os }}"
+    name: "Python ${{ matrix.python-version }} ${{ matrix.os }} urllib3@${{ matrix.urllib3 }}"
     runs-on: "${{ matrix.os }}"
 
     strategy:
