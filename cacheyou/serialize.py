@@ -5,12 +5,12 @@
 import base64
 import io
 import json
+import pickle
 import zlib
 
 import msgpack
 from requests.structures import CaseInsensitiveDict
-
-from cacheyou.compat import HTTPResponse, pickle, text_type
+from urllib3 import HTTPResponse
 
 
 def _b64_decode_bytes(b):
@@ -24,7 +24,7 @@ def _b64_decode_str(s):
 _default_body_read = object()
 
 
-class Serializer(object):
+class Serializer:
     def dumps(self, request, response, body=None):
         response_headers = CaseInsensitiveDict(response.headers)
 
@@ -46,12 +46,10 @@ class Serializer(object):
         data = {
             "response": {
                 "body": body,  # Empty bytestring if body is stored separately
-                "headers": dict(
-                    (text_type(k), text_type(v)) for k, v in response.headers.items()
-                ),
+                "headers": {str(k): str(v) for k, v in response.headers.items()},
                 "status": response.status,
                 "version": response.version,
-                "reason": text_type(response.reason),
+                "reason": str(response.reason),
                 "decode_content": response.decode_content,
             }
         }
@@ -61,10 +59,10 @@ class Serializer(object):
         if "vary" in response_headers:
             varied_headers = response_headers["vary"].split(",")
             for header in varied_headers:
-                header = text_type(header).strip()
+                header = str(header).strip()
                 header_value = request.headers.get(header, None)
                 if header_value is not None:
-                    header_value = text_type(header_value)
+                    header_value = str(header_value)
                 data["vary"][header] = header_value
 
         return b",".join([b"cc=4", msgpack.dumps(data, use_bin_type=True)])
@@ -92,7 +90,7 @@ class Serializer(object):
 
         # Dispatch to the actual load method for the given version
         try:
-            return getattr(self, "_loads_v{}".format(ver))(request, data, body_file)
+            return getattr(self, f"_loads_v{ver}")(request, data, body_file)
 
         except AttributeError:
             # This is a version we don't have a loads function for, so we'll
@@ -163,15 +161,15 @@ class Serializer(object):
 
         # We need to decode the items that we've base64 encoded
         cached["response"]["body"] = _b64_decode_bytes(cached["response"]["body"])
-        cached["response"]["headers"] = dict(
-            (_b64_decode_str(k), _b64_decode_str(v))
+        cached["response"]["headers"] = {
+            _b64_decode_str(k): _b64_decode_str(v)
             for k, v in cached["response"]["headers"].items()
-        )
+        }
         cached["response"]["reason"] = _b64_decode_str(cached["response"]["reason"])
-        cached["vary"] = dict(
-            (_b64_decode_str(k), _b64_decode_str(v) if v is not None else v)
+        cached["vary"] = {
+            _b64_decode_str(k): _b64_decode_str(v) if v is not None else v
             for k, v in cached["vary"].items()
-        )
+        }
 
         return self.prepare_response(request, cached, body_file)
 

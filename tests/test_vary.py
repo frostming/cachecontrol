@@ -3,16 +3,16 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from pprint import pprint
+from urllib.parse import urljoin
 
 import pytest
 import requests
 
 from cacheyou import CacheControl
 from cacheyou.cache import DictCache
-from cacheyou.compat import urljoin
 
 
-class TestVary(object):
+class TestVary:
     @pytest.fixture()
     def sess(self, url):
         self.url = urljoin(url, "/vary_accept")

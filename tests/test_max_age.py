@@ -2,7 +2,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from __future__ import print_function
 
 import pytest
 from requests import Session
@@ -13,7 +12,7 @@ from cacheyou.cache import DictCache
 from .utils import NullSerializer
 
 
-class TestMaxAge(object):
+class TestMaxAge:
     @pytest.fixture()
     def sess(self, url):
         self.url = url

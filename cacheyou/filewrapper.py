@@ -6,7 +6,7 @@ import mmap
 from tempfile import NamedTemporaryFile
 
 
-class CallbackFileWrapper(object):
+class CallbackFileWrapper:
     """
     Small wrapper around a fp object which will tee everything read into a
     buffer, and when that file is closed it will execute a callback with the

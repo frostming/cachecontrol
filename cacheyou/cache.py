@@ -9,7 +9,7 @@ safe in-memory dictionary.
 from threading import Lock
 
 
-class BaseCache(object):
+class BaseCache:
     def get(self, key):
         raise NotImplementedError()
 

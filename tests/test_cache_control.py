@@ -7,9 +7,9 @@ Unit tests that verify our caching methods work correctly.
 """
 import time
 from tempfile import mkdtemp
+from unittest.mock import ANY, Mock
 
 import pytest
-from mock import ANY, Mock
 
 from cacheyou import CacheController
 from cacheyou.cache import DictCache
@@ -20,7 +20,7 @@ from .utils import DummyRequest, DummyResponse, NullSerializer
 TIME_FMT = "%a, %d %b %Y %H:%M:%S GMT"
 
 
-class TestCacheControllerResponse(object):
+class TestCacheControllerResponse:
     url = "http://url.com/"
 
     def req(self, headers=None):
@@ -29,9 +29,7 @@ class TestCacheControllerResponse(object):
 
     def resp(self, headers=None):
         headers = headers or {}
-        return Mock(
-            status=200, headers=headers, request=self.req(), read=lambda **k: b"testing"
-        )
+        return Mock(status=200, headers=headers, request=self.req(), read=lambda **k: b"testing")
 
     @pytest.fixture()
     def cc(self):
@@ -221,7 +219,7 @@ class TestCacheControllerResponse(object):
             assert r.read() == b"my body"
 
 
-class TestCacheControlRequest(object):
+class TestCacheControlRequest:
     url = "http://foo.com/bar"
 
     def setup_method(self):
@@ -232,9 +230,7 @@ class TestCacheControlRequest(object):
         return self.c.cached_request(mock_request)
 
     def test_cache_request_no_headers(self):
-        cached_resp = Mock(
-            headers={"ETag": "jfd9094r808", "Content-Length": 100}, status=200
-        )
+        cached_resp = Mock(headers={"ETag": "jfd9094r808", "Content-Length": 100}, status=200)
         self.c.cache = DictCache({self.url: cached_resp})
         resp = self.req({})
         assert not resp

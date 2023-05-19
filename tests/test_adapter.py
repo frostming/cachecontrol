@@ -2,7 +2,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import mock
+from unittest.mock import Mock
+
 import pytest
 from requests import Session
 
@@ -34,7 +35,7 @@ def sess(url, request):
     sess.close()
 
 
-class TestSessionActions(object):
+class TestSessionActions:
     def test_get_caches(self, url, sess):
         r2 = sess.get(url)
         assert r2.from_cache is True
@@ -59,7 +60,7 @@ class TestSessionActions(object):
         assert not r2.from_cache
 
     def test_close(self):
-        cache = mock.Mock(spec=DictCache)
+        cache = Mock(spec=DictCache)
         sess = Session()
         sess.mount("http://", CacheControlAdapter(cache))
 

@@ -5,7 +5,7 @@ Shared utility classes.
 from requests.structures import CaseInsensitiveDict
 
 
-class NullSerializer(object):
+class NullSerializer:
 
     def dumps(self, request, response, body=None):
         return response

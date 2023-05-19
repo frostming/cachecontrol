@@ -19,7 +19,7 @@ def datetime_to_header(dt):
     return formatdate(calendar.timegm(dt.timetuple()))
 
 
-class BaseHeuristic(object):
+class BaseHeuristic:
     def warning(self, response):
         """
         Return a valid 1xx warning header value describing the cache

@@ -32,7 +32,7 @@ def parse_uri(uri):
     return (groups[1], groups[3], groups[4], groups[6], groups[8])
 
 
-class CacheController(object):
+class CacheController:
     """An interface to see if request should cached or not."""
 
     def __init__(
@@ -357,7 +357,7 @@ class CacheController(object):
 
             expires_time = max(expires_time, 14 * 86400)
 
-            logger.debug("etag object cached for {0} seconds".format(expires_time))
+            logger.debug(f"etag object cached for {expires_time} seconds")
             logger.debug("Caching due to etag")
             self._cache_set(cache_url, request, response, body, expires_time)
 
@@ -395,7 +395,7 @@ class CacheController(object):
                         expires_time = None
 
                     logger.debug(
-                        "Caching b/c of expires header. expires in {0} seconds".format(
+                        "Caching b/c of expires header. expires in {} seconds".format(
                             expires_time
                         )
                     )
@@ -431,11 +431,11 @@ class CacheController(object):
         excluded_headers = ["content-length"]
 
         cached_response.headers.update(
-            dict(
-                (k, v)
+            {
+                k: v
                 for k, v in response.headers.items()
                 if k.lower() not in excluded_headers
-            )
+            }
         )
 
         # we want a 200 b/c we have content via the cache
