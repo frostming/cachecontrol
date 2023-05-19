@@ -52,7 +52,7 @@ copyright = "2013, Eric Larson, 2023 Frost Ming"
 # built documents.
 #
 # The full version, including alpha/beta/rc tags.
-release = "23.0"
+release = "23.1"
 # The short X.Y version.
 version = release
 
