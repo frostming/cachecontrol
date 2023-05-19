@@ -7,8 +7,10 @@
  Release Notes
 ===============
 
-Unreleased
-==========
+23.0
+======
+
+The first release of ``CacheYou``.
 
 * Replace the usages of deprecated ``datetime.utcnow()``.
 * Fix the compatibility with ``urllib3`` 2.0.
