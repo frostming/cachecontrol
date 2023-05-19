@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 from cacheyou.cache import BaseCache
 
@@ -19,7 +19,10 @@ class RedisCache(BaseCache):
         if not expires:
             self.conn.set(key, value)
         elif isinstance(expires, datetime):
-            expires = expires - datetime.utcnow()
+            now_utc = datetime.now(timezone.utc)
+            if expires.tzinfo is None:
+                now_utc = now_utc.replace(tzinfo=None)
+            expires = expires - now_utc
             self.conn.setex(key, int(expires.total_seconds()), value)
         else:
             self.conn.setex(key, expires, value)
