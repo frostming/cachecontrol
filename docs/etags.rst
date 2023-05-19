@@ -7,7 +7,7 @@
  ETag Support
 ==============
 
-CacheControl's support of ETags is slightly different than
+CacheYou's support of ETags is slightly different than
 httplib2. In httplib2, an ETag is considered when using a cached
 response when the cache is considered stale. When a cached response is
 expired and it has an ETag header, httplib2 issues the next request with
@@ -15,13 +15,13 @@ the appropriate `If-None-Match` header. We'll call this behavior a **Time
 Priority** cache as the ETag support only takes effect when the time has
 expired.
 
-In CacheControl the default behavior when an ETag is sent by the
+In CacheYou the default behavior when an ETag is sent by the
 server is to cache the response. We'll refer to this pattern as a
 **Equal Priority** cache as the decision to cache is either time base or
 due to the presense of an ETag.
 
 The spec is not explicit what takes priority when caching with both
-ETags and time based headers. Therefore, CacheControl supports the
+ETags and time based headers. Therefore, CacheYou supports the
 different mechanisms via configuration where possible.
 
 
@@ -34,7 +34,7 @@ Equal Priority Caching and utilize a Time Priority algorithm like
 httplib2. ::
 
   import requests
-  from cachecontrol import CacheControl
+  from cacheyou import CacheControl
 
   sess = CacheControl(requests.Session(), cache_etags=False)
 
@@ -103,8 +103,8 @@ endpoints should focus on using ETags. In this situation it is
 recommended that you use the `CacheControlAdapter` directly. ::
 
   import requests
-  from cachecontrol import CacheControlAdapter
-  from cachecontrol.caches import RedisCache
+  from cacheyou import CacheControlAdapter
+  from cacheyou.caches import RedisCache
 
   # using django for an idea on where you might get a
   # username/password.

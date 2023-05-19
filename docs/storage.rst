@@ -7,7 +7,7 @@
  Storing Cache Data
 ====================
 
-CacheControl comes with a few storage backends for storing your
+CacheYou comes with a few storage backends for storing your
 cache'd objects.
 
 
@@ -36,13 +36,13 @@ multiple threads from writing to the same file at the same time.
   Note that you can install this dependency automatically with pip
   by requesting the *filecache* extra: ::
 
-    pip install cachecontrol[filecache]
+    pip install cacheyou[filecache]
 
 Here is an example using the `FileCache`: ::
 
   import requests
-  from cachecontrol import CacheControl
-  from cachecontrol.caches.file_cache import FileCache
+  from cacheyou import CacheControl
+  from cacheyou.caches.file_cache import FileCache
 
   sess = CacheControl(requests.Session(),
                       cache=FileCache('.web_cache'))
@@ -71,13 +71,13 @@ It requires `filelock`_ be installed as it prevents multiple threads from writin
   You can install this dependency automatically with pip
   by requesting the *filecache* extra: ::
 
-    pip install cachecontrol[filecache]
+    pip install cacheyou[filecache]
 
 Here is an example of using the cache::
 
   import requests
-  from cachecontrol import CacheControl
-  from cachecontrol.caches SeparateBodyFileCache
+  from cacheyou import CacheControl
+  from cacheyou.caches SeparateBodyFileCache
 
   sess = CacheControl(requests.Session(),
                       cache=SeparatedBodyFileCache('.web_cache'))
@@ -97,7 +97,7 @@ actions are used. It requires the `redis`_ library to be installed.
   Note that you can install this dependency automatically with pip
   by requesting the *redis* extra: ::
 
-    pip install cachecontrol[redis]
+    pip install cacheyou[redis]
 
 The `RedisCache` also provides a clear method to delete all keys in a
 database. Obviously, this should be used with caution as it is naive
@@ -107,8 +107,8 @@ Here is an example using a `RedisCache`: ::
 
   import redis
   import requests
-  from cachecontrol import CacheControl
-  from cachecontrol.caches.redis_cache import RedisCache
+  from cacheyou import CacheControl
+  from cacheyou.caches.redis_cache import RedisCache
 
 
   pool = redis.ConnectionPool(host='localhost', port=6379, db=0)

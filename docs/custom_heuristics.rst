@@ -8,14 +8,14 @@
 ===========================
 
 There are times when a server provides responses that are logically
-cacheable, but they lack the headers necessary to cause CacheControl
+cacheable, but they lack the headers necessary to cause CacheYou
 to cache the response. `The HTTP Caching Spec
 <http://tools.ietf.org/html/rfc7234>`_ does allow for caching systems
 to cache requests that lack caching headers. In these situations, the
 caching system can use heuristics to determine an appropriate amount
 of time to cache a response.
 
-By default, in CacheControl the decision to cache must be explicit by
+By default, in CacheYou the decision to cache must be explicit by
 default via the caching headers. When there is a need to cache
 responses that wouldn't normally be cached, a user can provide a
 heuristic to adjust the response in order to make it cacheable.
@@ -33,10 +33,10 @@ response headers before the response is considered for caching.
 
 For example, if we wanted to implement a caching strategy where every
 request should be cached for a week, we can implement the strategy in
-a `cachecontrol.heuristics.Heuristic`. ::
+a `cacheyou.heuristics.Heuristic`. ::
 
   import calendar
-  from cachecontrol.heuristics import BaseHeuristic
+  from cacheyou.heuristics import BaseHeuristic
   from datetime import datetime, timedelta
   from email.utils import parsedate, formatdate
 
@@ -70,7 +70,7 @@ constructor. ::
 
 
   from requests import Session
-  from cachecontrol import CacheControl
+  from cacheyou import CacheControl
 
 
   sess = CacheControl(Session(), heuristic=OneWeekHeuristic())
@@ -99,15 +99,15 @@ please consider sending a pull request or opening a issue.
 Expires After
 -------------
 
-CacheControl bundles an `ExpiresAfter` heuristic that is aimed at
+CacheYou bundles an `ExpiresAfter` heuristic that is aimed at
 making it relatively easy to automatically cache responses for a
 period of time. Here is an example
 
 .. code-block:: python
 
    import requests
-   from cachecontrol import CacheControlAdapter
-   from cachecontrol.heuristics import ExpiresAfter
+   from cacheyou import CacheControlAdapter
+   from cacheyou.heuristics import ExpiresAfter
 
    adapter = CacheControlAdapter(heuristic=ExpiresAfter(days=1))
 
@@ -122,7 +122,7 @@ override or set the `Cache-Control` header to `public`.
 Last Modified
 -------------
 
-CacheControl bundles an `LastModified` heuristic that emulates
+CacheYou bundles an `LastModified` heuristic that emulates
 the behavior of Firefox, following RFC7234. Roughly stated,
 this sets the expiration on a page to 10% of the difference
 between the request timestamp and the last modified timestamp.
@@ -131,8 +131,8 @@ This is capped at 24-hr.
 .. code-block:: python
 
    import requests
-   from cachecontrol import CacheControlAdapter
-   from cachecontrol.heuristics import LastModified
+   from cacheyou import CacheControlAdapter
+   from cacheyou.heuristics import LastModified
 
    adapter = CacheControlAdapter(heuristic=LastModified())
 
@@ -147,7 +147,7 @@ If you have a specific domain that you want to apply a specific
 heuristic to, use a separate adapter. ::
 
   import requests
-  from cachecontrol import CacheControlAdapter
+  from cacheyou import CacheControlAdapter
   from mypkg import MyHeuristic
 
 

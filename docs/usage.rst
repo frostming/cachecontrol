@@ -3,28 +3,28 @@
 
   SPDX-License-Identifier: Apache-2.0
 
-====================
- Using CacheControl
-====================
+===============
+ Using CacheYou
+===============
 
-CacheControl assumes you are using a `requests.Session` for your
+CacheYou assumes you are using a `requests.Session` for your
 requests. If you are making ad-hoc requests using `requests.get` then
 you probably are not terribly concerned about caching.
 
-There are two way to use CacheControl, via the wrapper and the
+There are two way to use CacheYou, via the wrapper and the
 adapter.
 
 
 Wrapper
 =======
 
-The easiest way to use CacheControl is to utilize the basic
+The easiest way to use CacheYou is to utilize the basic
 wrapper. Here is an example: ::
 
   import requests
-  import cachecontrol
+  import cacheyou
 
-  sess = cachecontrol.CacheControl(requests.Session())
+  sess = cacheyou.CacheControl(requests.Session())
   resp = sess.get('http://google.com')
 
 This uses the default cache store, a thread safe in-memory dictionary.
@@ -33,16 +33,16 @@ This uses the default cache store, a thread safe in-memory dictionary.
 Adapter
 =======
 
-The other way to use CacheControl is via a requests `Transport
+The other way to use CacheYou is via a requests `Transport
 Adapter`_.
 
 Here is how the adapter works: ::
 
   import requests
-  import cachecontrol
+  import cacheyou
 
   sess = requests.Session()
-  sess.mount('http://', cachecontrol.CacheControlAdapter())
+  sess.mount('http://', cacheyou.CacheControlAdapter())
 
   resp = sess.get('http://google.com')
 
@@ -56,14 +56,14 @@ Use a Different Cache Store
 
 Both the wrapper and adapter classes allow providing a custom cache
 store object for storing your cached data. Here is an example using
-the provided `FileCache` from CacheControl: ::
+the provided `FileCache` from CacheYou: ::
 
   import requests
 
-  from cachecontrol import CacheControl
+  from cacheyou import CacheControl
 
   # NOTE: This requires filelock be installed
-  from cachecontrol.caches import FileCache
+  from cacheyou.caches import FileCache
 
   sess = CacheControl(requests.Session(),
                       cache=FileCache('.webcache'))

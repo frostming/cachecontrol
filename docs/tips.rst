@@ -11,10 +11,10 @@ Caching is hard! It is considered one of the great challenges of
 computer science. Fortunately, the HTTP spec helps to navigate some
 pitfalls of invalidation using stale responses. Below are some
 suggestions and best practices to help avoid the more subtle issues
-that can crop up using CacheControl and HTTP caching.
+that can crop up using CacheYou and HTTP caching.
 
 If you have a suggestion please create a new issue in `github
-<https://github.com/ionrock/cachecontrol/issues/>`_ and let folks know
+<https://github.com/ionrock/cacheyou/issues/>`_ and let folks know
 what you ran into and how you fixed it.
 
 
@@ -22,7 +22,7 @@ Timezones
 =========
 
 It is important to remember that the times reported by a server may or
-may not be timezone aware. If you are using CacheControl with a
+may not be timezone aware. If you are using CacheYou with a
 service you control, make sure any timestamps are used consistently,
 especially if requests might cross timezones.
 
