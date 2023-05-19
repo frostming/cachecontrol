@@ -2,25 +2,30 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+from __future__ import annotations
+
 import calendar
 import time
+import typing as t
 from datetime import datetime, timedelta, timezone
 from email.utils import formatdate, parsedate, parsedate_tz
 
+if t.TYPE_CHECKING:
+    from urllib3.response import HTTPResponse
 TIME_FMT = "%a, %d %b %Y %H:%M:%S GMT"
 
 
-def expire_after(delta, date=None):
+def expire_after(delta: timedelta, date: datetime | None = None) -> datetime:
     date = date or datetime.now(timezone.utc)
     return date + delta
 
 
-def datetime_to_header(dt):
+def datetime_to_header(dt: datetime) -> str:
     return formatdate(calendar.timegm(dt.timetuple()))
 
 
 class BaseHeuristic:
-    def warning(self, response):
+    def warning(self, response: HTTPResponse) -> str | None:
         """
         Return a valid 1xx warning header value describing the cache
         adjustments.
@@ -31,7 +36,7 @@ class BaseHeuristic:
         """
         return '110 - "Response is Stale"'
 
-    def update_headers(self, response):
+    def update_headers(self, response: HTTPResponse) -> dict[str, str]:
         """Update the response headers with any new headers.
 
         NOTE: This SHOULD always include some Warning header to
@@ -40,7 +45,7 @@ class BaseHeuristic:
         """
         return {}
 
-    def apply(self, response):
+    def apply(self, response: HTTPResponse) -> HTTPResponse:
         updated_headers = self.update_headers(response)
 
         if updated_headers:
@@ -58,12 +63,15 @@ class OneDayCache(BaseHeuristic):
     future.
     """
 
-    def update_headers(self, response):
+    def update_headers(self, response: HTTPResponse) -> dict[str, str]:
         headers = {}
 
         if "expires" not in response.headers:
             date = parsedate(response.headers["date"])
-            expires = expire_after(timedelta(days=1), date=datetime(*date[:6], tzinfo=timezone.utc))
+            expires = expire_after(
+                timedelta(days=1),
+                date=datetime(*date[:6], tzinfo=timezone.utc),  # type: ignore[misc]
+            )
             headers["expires"] = datetime_to_header(expires)
             headers["cache-control"] = "public"
         return headers
@@ -74,16 +82,15 @@ class ExpiresAfter(BaseHeuristic):
     Cache **all** requests for a defined time period.
     """
 
-    def __init__(self, **kw):
+    def __init__(self, **kw: float) -> None:
         self.delta = timedelta(**kw)
 
-    def update_headers(self, response):
+    def update_headers(self, response: HTTPResponse) -> dict[str, str]:
         expires = expire_after(self.delta)
         return {"expires": datetime_to_header(expires), "cache-control": "public"}
 
-    def warning(self, response):
-        tmpl = "110 - Automatically cached for %s. Response might be stale"
-        return tmpl % self.delta
+    def warning(self, response: HTTPResponse) -> str | None:
+        return f"110 - Automatically cached for {self.delta}. Response might be stale"
 
 
 class LastModified(BaseHeuristic):
@@ -113,8 +120,8 @@ class LastModified(BaseHeuristic):
         501,
     }
 
-    def update_headers(self, resp):
-        headers = resp.headers
+    def update_headers(self, response: HTTPResponse) -> dict[str, str]:
+        headers = response.headers
 
         if "expires" in headers:
             return {}
@@ -122,13 +129,13 @@ class LastModified(BaseHeuristic):
         if "cache-control" in headers and headers["cache-control"] != "public":
             return {}
 
-        if resp.status not in self.cacheable_by_default_statuses:
+        if response.status not in self.cacheable_by_default_statuses:
             return {}
 
         if "date" not in headers or "last-modified" not in headers:
             return {}
 
-        date = calendar.timegm(parsedate_tz(headers["date"]))
+        date = calendar.timegm(parsedate_tz(headers["date"]))  # type: ignore[arg-type]
         last_modified = parsedate(headers["last-modified"])
         if date is None or last_modified is None:
             return {}
@@ -143,5 +150,5 @@ class LastModified(BaseHeuristic):
         expires = date + freshness_lifetime
         return {"expires": time.strftime(TIME_FMT, time.gmtime(expires))}
 
-    def warning(self, resp):
+    def warning(self, response: HTTPResponse) -> str | None:
         return None

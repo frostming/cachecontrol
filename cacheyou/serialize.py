@@ -2,22 +2,28 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+from __future__ import annotations
+
 import base64
 import io
 import json
 import pickle
+import typing as t
 import zlib
 
 import msgpack
 from requests.structures import CaseInsensitiveDict
 from urllib3 import HTTPResponse
 
+if t.TYPE_CHECKING:
+    from requests import PreparedRequest
 
-def _b64_decode_bytes(b):
+
+def _b64_decode_bytes(b: str) -> bytes:
     return base64.b64decode(b.encode("ascii"))
 
 
-def _b64_decode_str(s):
+def _b64_decode_str(s: str) -> str:
     return _b64_decode_bytes(s).decode("utf8")
 
 
@@ -25,7 +31,9 @@ _default_body_read = object()
 
 
 class Serializer:
-    def dumps(self, request, response, body=None):
+    def dumps(
+        self, request: PreparedRequest, response: HTTPResponse, body: bytes | None = None
+    ) -> bytes:
         response_headers = CaseInsensitiveDict(response.headers)
 
         if body is None:
@@ -33,7 +41,7 @@ class Serializer:
             # also update the response with a new file handler to be
             # sure it acts as though it was never read.
             body = response.read(decode_content=False)
-            response._fp = io.BytesIO(body)
+            response._fp = io.BytesIO(body)  # type: ignore[attr-defined]
             response.length_remaining = len(body)
 
         data = {
@@ -60,10 +68,12 @@ class Serializer:
 
         return b",".join([b"cc=4", msgpack.dumps(data, use_bin_type=True)])
 
-    def loads(self, request, data, body_file=None):
+    def loads(
+        self, request: PreparedRequest, data: bytes, body_file: t.IO[bytes] | None = None
+    ) -> HTTPResponse | None:
         # Short circuit if we've been given an empty set of data
         if not data:
-            return
+            return None
 
         # Determine what version of the serializer the data was serialized
         # with
@@ -79,18 +89,20 @@ class Serializer:
             ver = b"cc=0"
 
         # Get the version number out of the cc=N
-        ver = ver.split(b"=", 1)[-1].decode("ascii")
+        ver_str = ver.split(b"=", 1)[-1].decode("ascii")
 
         # Dispatch to the actual load method for the given version
         try:
-            return getattr(self, f"_loads_v{ver}")(request, data, body_file)
+            return getattr(self, f"_loads_v{ver_str}")(request, data, body_file)
 
         except AttributeError:
             # This is a version we don't have a loads function for, so we'll
             # just treat it as a miss and return None
-            return
+            return None
 
-    def prepare_response(self, request, cached, body_file=None):
+    def prepare_response(
+        self, request: PreparedRequest, cached: dict, body_file: t.IO[bytes] | None = None
+    ) -> HTTPResponse | None:
         """Verify our vary headers match and construct a real urllib3
         HTTPResponse object.
         """
@@ -99,17 +111,19 @@ class Serializer:
         # This case is also handled in the controller code when creating
         # a cache entry, but is left here for backwards compatibility.
         if "*" in cached.get("vary", {}):
-            return
+            return None
 
         # Ensure that the Vary headers for the cached response match our
         # request
         for header, value in cached.get("vary", {}).items():
             if request.headers.get(header, None) != value:
-                return
+                return None
 
         body_raw = cached["response"].pop("body")
 
-        headers = CaseInsensitiveDict(data=cached["response"]["headers"])
+        headers: t.MutableMapping[str, str] = CaseInsensitiveDict(
+            data=cached["response"]["headers"]
+        )
         if headers.get("transfer-encoding", "") == "chunked":
             headers.pop("transfer-encoding")
 
@@ -117,9 +131,7 @@ class Serializer:
 
         try:
             if body_file is None:
-                body = io.BytesIO(body_raw)
-            else:
-                body = body_file
+                body_file = io.BytesIO(body_raw)
         except TypeError:
             # This can happen if cachecontrol serialized to v1 format (pickle)
             # using Python 2. A Python 2 str(byte string) will be unpickled as
@@ -127,30 +139,36 @@ class Serializer:
             # fail with:
             #
             #     TypeError: 'str' does not support the buffer interface
-            body = io.BytesIO(body_raw.encode("utf8"))
+            body_file = io.BytesIO(body_raw.encode("utf8"))
 
-        return HTTPResponse(body=body, preload_content=False, **cached["response"])
+        return HTTPResponse(body=body_file, preload_content=False, **cached["response"])
 
-    def _loads_v0(self, request, data, body_file=None):
+    def _loads_v0(
+        self, request: PreparedRequest, data: bytes, body_file: t.IO[bytes] | None = None
+    ) -> HTTPResponse | None:
         # The original legacy cache data. This doesn't contain enough
         # information to construct everything we need, so we'll treat this as
         # a miss.
-        return
+        return None
 
-    def _loads_v1(self, request, data, body_file=None):
+    def _loads_v1(
+        self, request: PreparedRequest, data: bytes, body_file: t.IO[bytes] | None = None
+    ) -> HTTPResponse | None:
         try:
             cached = pickle.loads(data)
         except ValueError:
-            return
+            return None
 
         return self.prepare_response(request, cached, body_file)
 
-    def _loads_v2(self, request, data, body_file=None):
+    def _loads_v2(
+        self, request: PreparedRequest, data: bytes, body_file: t.IO[bytes] | None = None
+    ) -> HTTPResponse | None:
         assert body_file is None
         try:
             cached = json.loads(zlib.decompress(data).decode("utf8"))
         except (ValueError, zlib.error):
-            return
+            return None
 
         # We need to decode the items that we've base64 encoded
         cached["response"]["body"] = _b64_decode_bytes(cached["response"]["body"])
@@ -165,16 +183,20 @@ class Serializer:
 
         return self.prepare_response(request, cached, body_file)
 
-    def _loads_v3(self, request, data, body_file):
+    def _loads_v3(
+        self, request: PreparedRequest, data: bytes, body_file: t.IO[bytes] | None = None
+    ) -> HTTPResponse | None:
         # Due to Python 2 encoding issues, it's impossible to know for sure
         # exactly how to load v3 entries, thus we'll treat these as a miss so
         # that they get rewritten out as v4 entries.
-        return
+        return None
 
-    def _loads_v4(self, request, data, body_file=None):
+    def _loads_v4(
+        self, request: PreparedRequest, data: bytes, body_file: t.IO[bytes] | None = None
+    ) -> HTTPResponse | None:
         try:
             cached = msgpack.loads(data, raw=False)
         except ValueError:
-            return
+            return None
 
         return self.prepare_response(request, cached, body_file)

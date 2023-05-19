@@ -122,7 +122,7 @@ class TestFileCache(FileCacheTestsMixin):
     Tests for ``FileCache``.
     """
 
-    FileCacheClass = FileCache
+    FileCacheClass = FileCache  # type: ignore[assignment]
 
     def test_body_stored_inline(self, sess):
         """The body is stored together with the metadata."""
@@ -145,7 +145,7 @@ class TestSeparateBodyFileCache(FileCacheTestsMixin):
     Tests for ``SeparateBodyFileCache``
     """
 
-    FileCacheClass = SeparateBodyFileCache
+    FileCacheClass = SeparateBodyFileCache  # type: ignore[assignment]
 
     def test_body_actually_stored_separately(self, sess):
         """

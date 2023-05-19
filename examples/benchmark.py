@@ -39,7 +39,7 @@ def run_benchmark(sess):
     proc.start()
 
     start = datetime.now()
-    for i in range(0, 1000):
+    for _ in range(0, 1000):
         sess.get(URL)
         sys.stdout.write(".")
     end = datetime.now()

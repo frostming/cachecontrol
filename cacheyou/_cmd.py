@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 
 import requests
 
@@ -12,31 +12,29 @@ from cacheyou.cache import DictCache
 from cacheyou.controller import logger
 
 
-def setup_logging():
+def setup_logging() -> None:
     logger.setLevel(logging.DEBUG)
     handler = logging.StreamHandler()
     logger.addHandler(handler)
 
 
-def get_session():
-    adapter = CacheControlAdapter(
-        DictCache(), cache_etags=True, serializer=None, heuristic=None
-    )
+def get_session() -> requests.Session:
+    adapter = CacheControlAdapter(DictCache(), cache_etags=True, serializer=None, heuristic=None)
     sess = requests.Session()
     sess.mount("http://", adapter)
     sess.mount("https://", adapter)
 
-    sess.cache_controller = adapter.controller
+    sess.cache_controller = adapter.controller  # type:ignore[attr-defined]
     return sess
 
 
-def get_args():
+def get_args() -> Namespace:
     parser = ArgumentParser()
     parser.add_argument("url", help="The URL to try and cache")
     return parser.parse_args()
 
 
-def main(args=None):
+def main() -> None:
     args = get_args()
     sess = get_session()
 
@@ -47,10 +45,10 @@ def main(args=None):
     setup_logging()
 
     # try setting the cache
-    sess.cache_controller.cache_response(resp.request, resp.raw)
+    sess.cache_controller.cache_response(resp.request, resp.raw)  # type: ignore[attr-defined]
 
     # Now try to get it
-    if sess.cache_controller.cached_request(resp.request):
+    if sess.cache_controller.cached_request(resp.request):  # type: ignore[attr-defined]
         print("Cached!")
     else:
         print("Not cached :(")

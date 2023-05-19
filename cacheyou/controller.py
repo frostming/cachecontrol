@@ -5,16 +5,27 @@
 """
 The httplib2 algorithms ported for use with requests.
 """
+from __future__ import annotations
+
 import calendar
 import logging
 import re
 import time
+import typing as t
 from email.utils import parsedate_tz
 
 from requests.structures import CaseInsensitiveDict
 
 from cacheyou.cache import DictCache, SeparateBodyBaseCache
 from cacheyou.serialize import Serializer
+
+if t.TYPE_CHECKING:
+    from datetime import datetime
+
+    from requests import PreparedRequest
+    from urllib3.response import HTTPResponse
+
+    from cacheyou.cache import BaseCache
 
 logger = logging.getLogger(__name__)
 
@@ -23,12 +34,12 @@ URI = re.compile(r"^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?")
 PERMANENT_REDIRECT_STATUSES = (301, 308)
 
 
-def parse_uri(uri):
+def parse_uri(uri: str) -> tuple[str, str, str, str, str]:
     """Parses a URI using the regex given in Appendix B of RFC 3986.
 
     (scheme, authority, path, query, fragment) = parse_uri(uri)
     """
-    groups = URI.match(uri).groups()
+    groups = URI.match(uri).groups()  # type: ignore[union-attr]
     return (groups[1], groups[3], groups[4], groups[6], groups[8])
 
 
@@ -36,7 +47,11 @@ class CacheController:
     """An interface to see if request should cached or not."""
 
     def __init__(
-        self, cache=None, cache_etags=True, serializer=None, status_codes=None
+        self,
+        cache: BaseCache | None = None,
+        cache_etags: bool = True,
+        serializer: Serializer | None = None,
+        status_codes: t.Collection[int] | None = None,
     ):
         self.cache = DictCache() if cache is None else cache
         self.cache_etags = cache_etags
@@ -44,7 +59,7 @@ class CacheController:
         self.cacheable_status_codes = status_codes or (200, 203, 300, 301, 308)
 
     @classmethod
-    def _urlnorm(cls, uri):
+    def _urlnorm(cls, uri: str) -> str:
         """Normalize the URL to create a safe key for the cache"""
         (scheme, authority, path, query, fragment) = parse_uri(uri)
         if not scheme or not authority:
@@ -64,10 +79,10 @@ class CacheController:
         return defrag_uri
 
     @classmethod
-    def cache_url(cls, uri):
+    def cache_url(cls, uri: str) -> str:
         return cls._urlnorm(uri)
 
-    def parse_cache_control(self, headers):
+    def parse_cache_control(self, headers: t.Mapping[str, str]) -> dict[str, t.Any]:
         known_directives = {
             # https://tools.ietf.org/html/rfc7234#section-5.2
             "max-age": (int, True),
@@ -86,7 +101,7 @@ class CacheController:
 
         cc_headers = headers.get("cache-control", headers.get("Cache-Control", ""))
 
-        retval = {}
+        retval: dict[str, t.Any] = {}
 
         for cc_directive in cc_headers.split(","):
             if not cc_directive.strip():
@@ -121,11 +136,12 @@ class CacheController:
 
         return retval
 
-    def _load_from_cache(self, request):
+    def _load_from_cache(self, request: PreparedRequest) -> HTTPResponse | None:
         """
         Load a cached response, or return None if it's not available.
         """
         cache_url = request.url
+        assert cache_url is not None
         cache_data = self.cache.get(cache_url)
         if cache_data is None:
             logger.debug("No cache entry available")
@@ -141,12 +157,12 @@ class CacheController:
             logger.warning("Cache entry deserialization failed, entry ignored")
         return result
 
-    def cached_request(self, request):
+    def cached_request(self, request: PreparedRequest) -> HTTPResponse | t.Literal[False]:
         """
         Return a cached response if it exists in the cache, otherwise
         return False.
         """
-        cache_url = self.cache_url(request.url)
+        cache_url = self.cache_url(t.cast(str, request.url))
         logger.debug('Looking up "%s" in the cache', cache_url)
         cc = self.parse_cache_control(request.headers)
 
@@ -192,7 +208,7 @@ class CacheController:
             return False
 
         now = time.time()
-        date = calendar.timegm(parsedate_tz(headers["date"]))
+        date = calendar.timegm(parsedate_tz(headers["date"]))  # type: ignore[arg-type]
         current_age = max(0, now - date)
         logger.debug("Current age based on date: %i", current_age)
 
@@ -214,7 +230,7 @@ class CacheController:
         elif "expires" in headers:
             expires = parsedate_tz(headers["expires"])
             if expires is not None:
-                expire_time = calendar.timegm(expires) - date
+                expire_time = calendar.timegm(expires) - date  # type: ignore[arg-type]
                 freshness_lifetime = max(0, expire_time)
                 logger.debug("Freshness lifetime from expires: %i", freshness_lifetime)
 
@@ -222,9 +238,7 @@ class CacheController:
         # request. Note, this overrides what was in the response.
         if "max-age" in cc:
             freshness_lifetime = cc["max-age"]
-            logger.debug(
-                "Freshness lifetime from request max-age: %i", freshness_lifetime
-            )
+            logger.debug("Freshness lifetime from request max-age: %i", freshness_lifetime)
 
         if "min-fresh" in cc:
             min_fresh = cc["min-fresh"]
@@ -246,7 +260,7 @@ class CacheController:
         # return the original handler
         return False
 
-    def conditional_headers(self, request):
+    def conditional_headers(self, request: PreparedRequest) -> dict[str, str]:
         resp = self._load_from_cache(request)
         new_headers = {}
 
@@ -261,7 +275,14 @@ class CacheController:
 
         return new_headers
 
-    def _cache_set(self, cache_url, request, response, body=None, expires_time=None):
+    def _cache_set(
+        self,
+        cache_url: str,
+        request: PreparedRequest,
+        response: HTTPResponse,
+        body: bytes | None = None,
+        expires_time: int | datetime | None = None,
+    ) -> None:
         """
         Store the data in the cache.
         """
@@ -284,7 +305,13 @@ class CacheController:
                 expires=expires_time,
             )
 
-    def cache_response(self, request, response, body=None, status_codes=None):
+    def cache_response(
+        self,
+        request: PreparedRequest,
+        response: HTTPResponse,
+        body: bytes | None = None,
+        status_codes: t.Collection[int] | None = None,
+    ) -> None:
         """
         Algorithm for caching requests.
 
@@ -294,15 +321,13 @@ class CacheController:
         #                handle byte range requests
         cacheable_status_codes = status_codes or self.cacheable_status_codes
         if response.status not in cacheable_status_codes:
-            logger.debug(
-                "Status code %s not in %s", response.status, cacheable_status_codes
-            )
+            logger.debug("Status code %s not in %s", response.status, cacheable_status_codes)
             return
 
         response_headers = CaseInsensitiveDict(response.headers)
 
         if "date" in response_headers:
-            date = calendar.timegm(parsedate_tz(response_headers["date"]))
+            date = calendar.timegm(parsedate_tz(response_headers["date"]))  # type: ignore[arg-type]
         else:
             date = 0
 
@@ -321,7 +346,7 @@ class CacheController:
         cc_req = self.parse_cache_control(request.headers)
         cc = self.parse_cache_control(response_headers)
 
-        cache_url = self.cache_url(request.url)
+        cache_url = self.cache_url(t.cast(str, request.url))
         logger.debug('Updating cache with response from "%s"', cache_url)
 
         # Delete it from the cache if we happen to have it stored there
@@ -353,7 +378,7 @@ class CacheController:
             if response_headers.get("expires"):
                 expires = parsedate_tz(response_headers["expires"])
                 if expires is not None:
-                    expires_time = calendar.timegm(expires) - date
+                    expires_time = calendar.timegm(expires) - date  # type: ignore[arg-type]
 
             expires_time = max(expires_time, 14 * 86400)
 
@@ -371,7 +396,7 @@ class CacheController:
         # is no date header then we can't do anything about expiring
         # the cache.
         elif "date" in response_headers:
-            date = calendar.timegm(parsedate_tz(response_headers["date"]))
+            date = calendar.timegm(parsedate_tz(response_headers["date"]))  # type: ignore[arg-type]
             # cache when there is a max-age > 0
             if "max-age" in cc and cc["max-age"] > 0:
                 logger.debug("Caching b/c date exists and max-age > 0")
@@ -390,14 +415,12 @@ class CacheController:
                 if response_headers["expires"]:
                     expires = parsedate_tz(response_headers["expires"])
                     if expires is not None:
-                        expires_time = calendar.timegm(expires) - date
+                        expires_time = calendar.timegm(expires) - date  # type: ignore[arg-type]
                     else:
                         expires_time = None
 
                     logger.debug(
-                        "Caching b/c of expires header. expires in {} seconds".format(
-                            expires_time
-                        )
+                        "Caching b/c of expires header. expires in %s seconds", expires_time
                     )
                     self._cache_set(
                         cache_url,
@@ -407,14 +430,16 @@ class CacheController:
                         expires_time,
                     )
 
-    def update_cached_response(self, request, response):
+    def update_cached_response(
+        self, request: PreparedRequest, response: HTTPResponse
+    ) -> HTTPResponse:
         """On a 304 we will get a new set of headers that we want to
         update our cached value with, assuming we have one.
 
         This should only ever be called when we've sent an ETag and
         gotten a 304 as the response.
         """
-        cache_url = self.cache_url(request.url)
+        cache_url = self.cache_url(t.cast(str, request.url))
         cached_response = self._load_from_cache(request)
 
         if not cached_response:
@@ -431,11 +456,7 @@ class CacheController:
         excluded_headers = ["content-length"]
 
         cached_response.headers.update(
-            {
-                k: v
-                for k, v in response.headers.items()
-                if k.lower() not in excluded_headers
-            }
+            {k: v for k, v in response.headers.items() if k.lower() not in excluded_headers}
         )
 
         # we want a 200 b/c we have content via the cache

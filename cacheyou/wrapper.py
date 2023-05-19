@@ -2,19 +2,31 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+from __future__ import annotations
+
+import typing as t
+
 from cacheyou.adapter import CacheControlAdapter
 from cacheyou.cache import DictCache
 
+if t.TYPE_CHECKING:
+    from requests import Session
+
+    from cacheyou.cache import BaseCache
+    from cacheyou.controller import CacheController
+    from cacheyou.heuristics import BaseHeuristic
+    from cacheyou.serialize import Serializer
+
 
 def CacheControl(
-    sess,
-    cache=None,
-    cache_etags=True,
-    serializer=None,
-    heuristic=None,
-    controller_class=None,
-    adapter_class=None,
-    cacheable_methods=None,
+    sess: Session,
+    cache: BaseCache | None = None,
+    cache_etags: bool = True,
+    serializer: Serializer | None = None,
+    heuristic: BaseHeuristic | None = None,
+    controller_class: type[CacheController] | None = None,
+    adapter_class: type[CacheControlAdapter] | None = None,
+    cacheable_methods: t.Collection[str] | None = None,
 ):
     cache = DictCache() if cache is None else cache
     adapter_class = adapter_class or CacheControlAdapter
