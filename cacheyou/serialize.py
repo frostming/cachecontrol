@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import base64
+import inspect
 import io
 import json
 import pickle
@@ -54,6 +55,8 @@ class Serializer:
                 "decode_content": response.decode_content,
             }
         }
+        if hasattr(response, "strict"):
+            data["response"]["strict"] = response.strict  # type: ignore[attr-defined]
 
         # Construct our vary headers
         data["vary"] = {}
@@ -127,8 +130,6 @@ class Serializer:
         if headers.get("transfer-encoding", "") == "chunked":
             headers.pop("transfer-encoding")
 
-        cached["response"]["headers"] = headers
-
         try:
             if body_file is None:
                 body_file = io.BytesIO(body_raw)
@@ -140,6 +141,10 @@ class Serializer:
             #
             #     TypeError: 'str' does not support the buffer interface
             body_file = io.BytesIO(body_raw.encode("utf8"))
+
+        cached["response"]["headers"] = headers
+        if "strict" not in inspect.signature(HTTPResponse).parameters:
+            cached["response"].pop("strict", None)
 
         return HTTPResponse(body=body_file, preload_content=False, **cached["response"])
 

@@ -7,6 +7,11 @@
  Release Notes
 ===============
 
+23.2
+====
+
+* Handle ``strict`` parameter for both ``urllib3`` 1.x and 2.x.
+
 23.1
 ====
 
