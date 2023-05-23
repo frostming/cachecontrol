@@ -49,6 +49,8 @@ plugins = ["pdm-autoexport"]
 source-includes = ["docs/", "tox.ini"]
 
 [tool.pdm.scripts]
+test = "pytest"
+release = "bumpver update"
 docs = [
     "sphinx-autobuild",
     "docs/",
@@ -67,6 +69,7 @@ docs = [
 dev = [
     "tox",
     "bumpver>=2023.1124",
+    "pytest>=7.3.1",
 ]
 docs = [
     "sphinx",
