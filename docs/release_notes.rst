@@ -7,6 +7,11 @@
  Release Notes
 ===============
 
+23.3
+====
+
+* Exclude the ``tests`` directory from the wheel distribution.
+
 23.2
 ====
 

@@ -46,7 +46,7 @@ doesitcache = "cacheyou._cmd:main"
 plugins = ["pdm-autoexport"]
 
 [tool.pdm.build]
-source-includes = ["docs/", "tox.ini"]
+source-includes = ["docs/", "tox.ini", "tests/"]
 
 [tool.pdm.scripts]
 test = "pytest"
