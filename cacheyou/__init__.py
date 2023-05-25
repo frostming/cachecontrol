@@ -12,7 +12,7 @@ from cacheyou.adapter import CacheControlAdapter
 from cacheyou.controller import CacheController
 from cacheyou.wrapper import CacheControl
 
-__version__ = "23.2"
+__version__ = "23.3"
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 

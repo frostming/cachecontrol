@@ -1,6 +1,6 @@
 [project]
 name = "CacheYou"
-version = "23.2"
+version = "23.3"
 description = "httplib2 caching for requests"
 keywords = ["requests", "http", "caching", "web"]
 readme = "README.md"
@@ -113,7 +113,7 @@ max-complexity = 10
 known-first-party = ["cacheyou"]
 
 [tool.bumpver]
-current_version = "23.2"
+current_version = "23.3"
 version_pattern = "YY.INC0[PYTAGNUM]"
 commit_message = "bump version {old_version} -> {new_version}"
 commit = true
